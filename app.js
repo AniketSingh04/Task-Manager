@@ -4,16 +4,21 @@ const tasks = require("./routes/tasks.js");
 const connectDB = require('./controllers/db/connect.js')
 require("dotenv").config()
 const notFound = require("./middleware/not_found.js");
+const errorHandlerMiddleware = require("./middleware/error_handler.js");
+
 //middleware
 app.use(express.json()) //for handling json requests
 app.use(express.static("./public"));
-app.use(notFound); //customized 404 middleware used
 
 //routes
 app.use('/api/v1/tasks', tasks)
 
+//Custom Middlewares
+app.use(notFound); //customized 404 middleware used
+app.use(errorHandlerMiddleware); //error-handler middleware should always be used at last
+
 //App will run iff Connection to DB is successful
-const port = 3000;
+const port = process.env.PORT || 3000;
 const start = async()=>{
     try{
         await connectDB(process.env.Mongo_URI)
